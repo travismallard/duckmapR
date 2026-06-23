@@ -23,6 +23,5 @@ libs/
 # Claude Code local settings
 .claude/
 
-# Generated docs/cache
-docs/
+# Logs
 *.log
