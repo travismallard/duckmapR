@@ -1,0 +1,12 @@
+^\.git$
+^\.github$
+^\.Rproj\.user$
+^.*\.Rproj$
+^README\.Rmd$
+^docs$
+^.*\.tar\.gz$
+^.*\.zip$
+^\.DS_Store$
+^\.vscode$
+^\.idea$
+^\.claude$

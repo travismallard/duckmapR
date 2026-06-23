@@ -1,0 +1,28 @@
+# R/RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+
+# Package build artifacts
+*.tar.gz
+*.zip
+*.Rcheck/
+Meta/
+html/
+help/
+libs/
+00LOCK*/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Claude Code local settings
+.claude/
+
+# Generated docs/cache
+docs/
+*.log

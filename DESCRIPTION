@@ -1,0 +1,20 @@
+Package: duckmapR
+Type: Package
+Title: Mallard-Inspired Color Maps for Scientific Data Visualization
+Version: 0.1.0
+Authors@R: c(person("Travis", "Mallard", role = c("aut", "cre"), email = "travis.mallard@gmail.com"))
+Description: Provides Mallard-inspired sequential, divergent, and categorical color maps for scientific data visualization. Color maps are designed for perceptual structure, color vision deficiency accessibility, and grayscale usability, with ggplot2 scale helpers, optional vivid sequential variants, true-white-center divergent palettes, and a compact palette-generation API.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1.0)
+Imports:
+    ggplot2,
+    grDevices,
+    graphics,
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+URL: https://github.com/travismallard/duckmapR
+BugReports: https://github.com/travismallard/duckmapR/issues
