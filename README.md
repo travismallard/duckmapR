@@ -128,52 +128,6 @@ scale_color_duckmap(
 )
 ```
 
-## Palette classes
-
-`duckmapR` currently includes three palette classes:
-
-- Sequential palettes: `type = "seq"` or `type = "sequential"`
-- Divergent palettes: `type = "div"` or `type = "divergent"`
-- Categorical palette: `archetype`, or `type = "cat"` / `type = "categorical"`
-
-## Categorical palette
-
-The default categorical palette is `archetype`, a seven-color palette designed to improve grayscale separation and accessibility under common forms of color vision deficiency.
-
-```r
-duckmap("archetype")
-duckmap(type = "categorical")
-duckmap(type = "categorical", colors = c("mallard_teal", "soft_gold", "eggshell"))
-```
-
-The colors in `archetype` are:
-
-```r
-duckmap("archetype")
-```
-
-## Palette design
-
-The sequential palettes were designed in perceptual color spaces and resampled to support smooth transitions across the requested number of colors. The default sequential palette is `full_plumage`.
-
-An optional higher-chroma sequential style is available via `style = "vivid"`:
-
-```r
-standard_cols <- duckmap("full_plumage", n = 9)
-vivid_cols <- duckmap("full_plumage", n = 9, style = "vivid")
-
-scale_fill_duckmap("full_plumage", style = "vivid")
-scale_color_duckmap("marsh_teal", style = "vivid")
-```
-
-The divergent palettes use true-white-center design paths, making them suitable for visualizing signed, centered, or contrast-coded quantities. Available divergent palettes are:
-
-```r
-duckmap("umber_teal")
-duckmap("orange_blue")
-duckmap("chestnut_violet")
-```
-
 ## Notes
 
 Palette design matrices are stored as CSV files in `inst/extdata` and are converted to sRGB hex colors when requested.
