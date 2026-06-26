@@ -13,7 +13,7 @@ duckmap(
 )
 }
 \arguments{
-\item{palette}{Optional palette name. Sequential and divergent palettes can be called directly by name. The default categorical palette is called \code{"archetype"}.}
+\item{palette}{Optional palette name. Sequential and divergent palettes can be called directly by name. The default categorical palette is called \code{"archetype"}. May also be a \code{duckmap_palette} object created by \code{\link{duckmap_custom}}.}
 \item{type}{Palette type. Accepted values are \code{"all"}, \code{"seq"}/\code{"sequential"}, \code{"div"}/\code{"divergent"}, and \code{"cat"}/\code{"categorical"}. Defaults to \code{"all"}, which resolves supplied palette names across palette classes.}
 \item{n}{Number of colors to return. If \code{NULL}, defaults are type-aware: 256 for sequential palettes, 257 for divergent palettes, and the full categorical palette length for categorical colors.}
 \item{reverse}{Logical; if \code{TRUE}, reverse the palette.}

@@ -7,6 +7,7 @@ The core API is compact:
 ```r
 duckmap()
 duckmap_summary()
+duckmap_custom()
 scale_fill_duckmap()
 scale_color_duckmap()
 ```
@@ -126,6 +127,32 @@ scale_color_duckmap(
   colors = c("mallard_teal", "soft_gold", "slate_blue")
 )
 ```
+
+## Custom palettes
+
+Define your own palette from CIELAB anchors with `duckmap_custom()`. The result is interpolated in Lab space exactly like the built-in palettes, and the returned object works directly with `duckmap()` and the ggplot2 scale helpers.
+
+```r
+map <- duckmap_custom(
+  anchors = data.frame(
+    t = c(0, 0.333, 0.667, 1),
+    L = c(20, 51, 70, 95),
+    a = c(38, 21, 24, -1),
+    b = c(-51, -25, 19, 3)
+  ),
+  name = "custom"
+)
+
+# Generate colors
+duckmap(map, n = 11)
+
+# Use with ggplot2 (continuous by default; discrete = TRUE for discrete data)
+ggplot(faithfuld, aes(waiting, eruptions, fill = density)) +
+  geom_raster() +
+  scale_fill_duckmap(map)
+```
+
+The optional `t` column sets each anchor's relative position (rescaled to `[0, 1]`); omit it for evenly spaced anchors. The `name` is a cosmetic label — the palette is used via the object itself, so a name is not required.
 
 ## Notes
 

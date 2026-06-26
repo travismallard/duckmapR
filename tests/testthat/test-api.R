@@ -66,3 +66,41 @@ test_that("scale helpers use singular names", {
   expect_false(exists("scale_fill_duckmaps", mode = "function"))
   expect_false(exists("scale_color_duckmaps", mode = "function"))
 })
+
+test_that("duckmap_custom builds and generates a usable palette", {
+  anchors <- data.frame(
+    t = c(0, 0.333, 0.667, 1),
+    L = c(20, 51, 70, 95),
+    a = c(38, 21, 24, -1),
+    b = c(-51, -25, 19, 3)
+  )
+  map <- duckmap_custom(anchors = anchors, name = "custom")
+  expect_s3_class(map, "duckmap_palette")
+  expect_equal(map$name, "custom")
+
+  cols <- duckmap(map, n = 11)
+  expect_equal(length(cols), 11)
+  expect_true(all(grepl("^#[0-9A-Fa-f]{6}$", cols)))
+  expect_equal(length(duckmap(map, n = 5)), 5)
+  expect_equal(length(duckmap(map)), 256)
+  expect_equal(duckmap(map, n = 11, reverse = TRUE), rev(duckmap(map, n = 11)))
+
+  # default name and t-less anchors
+  map2 <- duckmap_custom(data.frame(L = c(20, 95), a = c(38, -1), b = c(-51, 3)))
+  expect_equal(map2$name, "custom")
+  expect_equal(length(duckmap(map2, n = 7)), 7)
+})
+
+test_that("duckmap_custom integrates with ggplot2 scales", {
+  map <- duckmap_custom(data.frame(L = c(20, 60, 95), a = c(30, 10, -1), b = c(-40, 0, 3)))
+  expect_s3_class(scale_fill_duckmap(map), "ScaleContinuous")
+  expect_s3_class(scale_color_duckmap(map), "ScaleContinuous")
+  expect_s3_class(scale_fill_duckmap(map, discrete = TRUE), "ScaleDiscrete")
+})
+
+test_that("duckmap_custom validates anchors", {
+  expect_error(duckmap_custom(list(L = 1, a = 1, b = 1)))
+  expect_error(duckmap_custom(data.frame(L = 20, a = 30, b = -40)))
+  expect_error(duckmap_custom(data.frame(L = c(20, 95), a = c(30, -1))))
+  expect_error(duckmap_custom(data.frame(L = c(20, 95), a = c(30, -1), b = c(-40, 3)), name = c("a", "b")))
+})

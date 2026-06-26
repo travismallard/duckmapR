@@ -14,7 +14,7 @@ scale_color_duckmap(
 )
 }
 \arguments{
-\item{palette}{Optional palette name. Sequential and divergent palettes can be called directly by name.}
+\item{palette}{Optional palette name. Sequential and divergent palettes can be called directly by name. May also be a \code{duckmap_palette} object created by \code{\link{duckmap_custom}}, which yields a continuous scale (or discrete with \code{discrete = TRUE}).}
 \item{type}{Palette type. Accepted values are \code{"all"}, \code{"seq"}/\code{"sequential"}, \code{"div"}/\code{"divergent"}, and \code{"cat"}/\code{"categorical"}.}
 \item{discrete}{Logical; if \code{TRUE}, use a discrete scale. If \code{NULL}, categorical palettes use a discrete scale and sequential/divergent palettes use continuous scales.}
 \item{reverse}{Logical; reverse the palette.}

@@ -214,13 +214,17 @@
   grDevices::rgb(rgb[, 1], rgb[, 2], rgb[, 3])
 }
 
-.duckmaps_interp_lab <- function(lab, n) {
+.duckmaps_interp_lab <- function(lab, n, x_old = NULL) {
   if (is.null(n)) n <- nrow(lab)
   n <- .duckmaps_validate_n(n)
   if (n == 0L) return(character(0))
-  if (n == nrow(lab)) return(.duckmaps_lab_to_hex(lab))
-  x_old <- seq(0, 1, length.out = nrow(lab))
-  x_new <- seq(0, 1, length.out = n)
+  if (is.null(x_old)) {
+    if (n == nrow(lab)) return(.duckmaps_lab_to_hex(lab))
+    x_old <- seq(0, 1, length.out = nrow(lab))
+    x_new <- seq(0, 1, length.out = n)
+  } else {
+    x_new <- seq(min(x_old), max(x_old), length.out = n)
+  }
   out <- cbind(
     stats::approx(x_old, lab[, 1], xout = x_new, ties = "ordered")$y,
     stats::approx(x_old, lab[, 2], xout = x_new, ties = "ordered")$y,
