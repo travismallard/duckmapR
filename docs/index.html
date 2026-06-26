@@ -1282,15 +1282,6 @@ function setupCanvas(canvas){
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 // ─── Chart renderers ──────────────────────────────────────────────────────────
-function drawHeatmap(canvas){
-  const {ctx,w,h}=setupCanvas(canvas); const lut=buildLUT();
-  const {GW,GH,field}=DATA; const cw=w/GW, ch=h/GH;
-  for(let y=0;y<GH;y++) for(let x=0;x<GW;x++){
-    const c=lut[Math.round(field[y][x]*255)];
-    ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
-    ctx.fillRect(x*cw, (GH-1-y)*ch, cw+1, ch+1);
-  }
-}
 function drawDivField(canvas){
   const {ctx,w,h}=setupCanvas(canvas); const lut=buildLUT();
   const {GW,GH,dfield}=DATA; const cw=w/GW, ch=h/GH;
@@ -1310,17 +1301,6 @@ function drawContinuousScatter(canvas){
     ctx.arc(pad+p.x*(w-2*pad), h-(pad+p.y*(h-2*pad)), 4.2, 0, 2*Math.PI);
     ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; ctx.fill();
     ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=0.5; ctx.stroke();
-  });
-}
-function drawSeqBars(canvas){
-  const {ctx,w,h}=setupCanvas(canvas);
-  ctx.fillStyle=css('--white'); ctx.fillRect(0,0,w,h);
-  const anchors=resolvedAnchors(); const bars=DATA.seqBars; const n=bars.length;
-  const pad=10, gap=6, bw=(w-2*pad-gap*(n-1))/n;
-  bars.forEach((v,i)=>{
-    const c=discreteColor(anchors,i,n); const bh=(h-2*pad)*v;
-    ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
-    ctx.fillRect(pad+i*(bw+gap), h-pad-bh, bw, bh);
   });
 }
 function drawCorrMatrix(canvas){
@@ -1426,78 +1406,6 @@ function drawCellHeatmap(canvas){
     ctx.fillRect(pad+c*(cw+gap), pad+r*(ch+gap), cw, ch);
   }
 }
-function drawTreemap(canvas){
-  const {ctx,w,h}=setupCanvas(canvas); ctx.fillStyle=css('--white'); ctx.fillRect(0,0,w,h);
-  const lut=buildLUT(); const groups=DATA.treemap; const pad=6, gap=2.5;
-  const sums=groups.map(g=>g.reduce((a,b)=>a+b,0)); const total=sums.reduce((a,b)=>a+b,0);
-  const innerW=w-2*pad, innerH=h-2*pad; let x=pad;
-  groups.forEach((g,gi)=>{
-    const colW=innerW*(sums[gi]/total)-gap; let y=pad;
-    g.forEach(v=>{ const rowH=innerH*(v/sums[gi])-gap; const c=lut[Math.round(v*255)];
-      ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
-      ctx.fillRect(x, y, Math.max(1,colW), Math.max(1,rowH)); y+=rowH+gap;
-    });
-    x+=colW+gap;
-  });
-}
-function drawRidgeline(canvas){
-  const {ctx,w,h}=setupCanvas(canvas); ctx.fillStyle=css('--white'); ctx.fillRect(0,0,w,h);
-  const lut=buildLUT(); const rows=DATA.ridges; const R=rows.length;
-  const padX=10, padTop=16, padBot=12;
-  const plotW=w-2*padX; const rowGap=(h-padTop-padBot)/R; const amp=rowGap*1.3;
-  for(let r=0;r<R;r++){
-    const baseY=padTop+rowGap*(r+0.9); const arr=rows[r]; const n=arr.length;
-    ctx.beginPath(); ctx.moveTo(padX, baseY);
-    for(let i=0;i<n;i++){ const x=padX+(i/(n-1))*plotW; ctx.lineTo(x, baseY-arr[i]*amp); }
-    ctx.lineTo(padX+plotW, baseY); ctx.closePath();
-    ctx.save(); ctx.clip();
-    for(let x=0;x<plotW;x++){ const c=lut[Math.round(x/(plotW-1)*255)];
-      ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; ctx.fillRect(padX+x, baseY-amp, 1, amp+2); }
-    ctx.restore();
-    ctx.beginPath();
-    for(let i=0;i<n;i++){ const x=padX+(i/(n-1))*plotW, y=baseY-arr[i]*amp; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }
-    ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=1; ctx.stroke();
-  }
-}
-function drawRegScatter(canvas){
-  const {ctx,w,h}=setupCanvas(canvas); ctx.fillStyle=css('--white'); ctx.fillRect(0,0,w,h);
-  const lut=buildLUT(); const pad=12; const X=x=>pad+x*(w-2*pad), Y=y=>h-pad-y*(h-2*pad);
-  const pts=DATA.regScatter; const n=pts.length;
-  let sx=0,sy=0,sxx=0,sxy=0; pts.forEach(p=>{sx+=p.x;sy+=p.y;sxx+=p.x*p.x;sxy+=p.x*p.y;});
-  const mx=sx/n,my=sy/n; const Sxx=sxx-n*mx*mx; const slope=(sxy-n*mx*my)/Sxx; const inter=my-slope*mx;
-  const yhat=x=>inter+slope*x;
-  let ss=0; pts.forEach(p=>{const e=p.y-yhat(p.x); ss+=e*e;}); const sd=Math.sqrt(ss/(n-2));
-  const ci=x=>1.96*sd*Math.sqrt(1/n + ((x-mx)**2)/Sxx);
-  const clp=v=>Math.min(1,Math.max(0,v));
-  ctx.beginPath(); const NB=40;
-  for(let i=0;i<=NB;i++){ const x=i/NB, y=clp(yhat(x)+ci(x)); i===0?ctx.moveTo(X(x),Y(y)):ctx.lineTo(X(x),Y(y)); }
-  for(let i=NB;i>=0;i--){ const x=i/NB, y=clp(yhat(x)-ci(x)); ctx.lineTo(X(x),Y(y)); }
-  ctx.closePath(); ctx.fillStyle='rgba(46,85,69,0.13)'; ctx.fill();
-  pts.forEach(p=>{ const c=lut[Math.round(clp(p.y)*255)];
-    ctx.beginPath(); ctx.arc(X(p.x),Y(p.y),3.6,0,2*Math.PI);
-    ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=0.5; ctx.stroke(); });
-  ctx.strokeStyle=css('--ink'); ctx.lineWidth=2; ctx.beginPath();
-  ctx.moveTo(X(0),Y(clp(yhat(0)))); ctx.lineTo(X(1),Y(clp(yhat(1)))); ctx.stroke();
-}
-function drawRadial(canvas){
-  const {ctx,w,h}=setupCanvas(canvas); ctx.fillStyle=css('--white'); ctx.fillRect(0,0,w,h);
-  const lut=buildLUT(); const vals=DATA.radial; const n=vals.length;
-  const cx=w/2, cy=h/2; const inner=Math.min(w,h)*0.14, maxR=Math.min(w,h)*0.46;
-  for(let i=0;i<n;i++){ const a0=(i/n)*2*Math.PI - Math.PI/2, a1=((i+0.82)/n)*2*Math.PI - Math.PI/2;
-    const r=inner+(maxR-inner)*vals[i]; const c=lut[Math.round(vals[i]*255)];
-    ctx.beginPath();
-    ctx.moveTo(cx+inner*Math.cos(a0), cy+inner*Math.sin(a0));
-    ctx.lineTo(cx+r*Math.cos(a0), cy+r*Math.sin(a0));
-    ctx.arc(cx,cy,r,a0,a1);
-    ctx.lineTo(cx+inner*Math.cos(a1), cy+inner*Math.sin(a1));
-    ctx.arc(cx,cy,inner,a1,a0,true);
-    ctx.closePath();
-    ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; ctx.fill();
-  }
-  ctx.beginPath(); ctx.arc(cx,cy,inner,0,2*Math.PI); ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.lineWidth=1; ctx.stroke();
-}
-
 const CHART_SETS = {
   seq: [
     {t:'Contour map', d:'Monotonic lightness keeps gradients legible.', fn:drawContour},
@@ -1574,8 +1482,10 @@ function renderStrip(){
     catEl.style.display='none'; seqDivEl.style.display='flex';
     const canvas=document.getElementById('stripCanvas');
     const {ctx,w,h}=setupCanvas(canvas); const lut=buildLUT();
-    for(let x=0;x<w;x++){ const c=lut[Math.round(x/(w-1)*255)];
-      ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; ctx.fillRect(x,0,1,h); }
+    const grad=ctx.createLinearGradient(0,0,w,0);
+    for(let i=0;i<lut.length;i++){ const c=lut[i];
+      grad.addColorStop(i/(lut.length-1), `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`); }
+    ctx.fillStyle=grad; ctx.fillRect(0,0,w,h);
   }
   const note=document.getElementById('cvdNote');
   note.textContent = state.cvd==='normal' ? 'Showing true colors' : `Simulating ${({deuter:'deuteranopia',protan:'protanopia',tritan:'tritanopia',gray:'grayscale'})[state.cvd]}`;
