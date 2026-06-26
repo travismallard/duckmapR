@@ -7,7 +7,6 @@ The core API is compact:
 ```r
 duckmap()
 duckmap_summary()
-duckmap_info()
 scale_fill_duckmap()
 scale_color_duckmap()
 ```
@@ -85,11 +84,11 @@ duckmap_summary(type = "categorical")
 duckmap_summary(style = "vivid")
 ```
 
-For structured palette metadata, use:
+For structured palette metadata (without drawing), use:
 
 ```r
-duckmap_info()
-duckmap_info(type = "divergent")
+duckmap_summary(plot = FALSE)
+duckmap_summary(type = "divergent", plot = FALSE)
 ```
 
 ## ggplot2 scales

@@ -1,5 +1,7 @@
-test_that("duckmap_info reports palettes", {
-  info <- duckmap_info()
+test_that("duckmap_summary(plot = FALSE) reports palette metadata", {
+  info <- duckmap_summary(plot = FALSE)
+  expect_s3_class(info, "data.frame")
+  expect_true(all(c("palette", "type", "default", "default_n", "styles") %in% names(info)))
   expect_true("full_plumage" %in% info$palette)
   expect_true("wetland_dabbler" %in% info$palette)
   expect_true("wing_flash" %in% info$palette)
@@ -12,6 +14,7 @@ test_that("duckmap_info reports palettes", {
   expect_true(any(info$type == "sequential"))
   expect_true(any(info$type == "divergent"))
   expect_true(any(info$type == "categorical"))
+  expect_false(exists("duckmap_info", mode = "function"))
 })
 
 test_that("duckmap generates palettes by name without type", {

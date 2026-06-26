@@ -61,6 +61,40 @@
   )
 }
 
+.duckmaps_info <- function(type = "all") {
+  type <- .duckmaps_normalize_type(type)
+
+  info <- data.frame(
+    palette = c(.duckmaps_seq_names, .duckmaps_div_names, "archetype"),
+    type = c(
+      rep("sequential", length(.duckmaps_seq_names)),
+      rep("divergent", length(.duckmaps_div_names)),
+      "categorical"
+    ),
+    default = c(
+      .duckmaps_seq_names == .duckmaps_default_palette("seq"),
+      .duckmaps_div_names == .duckmaps_default_palette("div"),
+      TRUE
+    ),
+    default_n = c(
+      rep(.duckmaps_default_n("seq"), length(.duckmaps_seq_names)),
+      rep(.duckmaps_default_n("div"), length(.duckmaps_div_names)),
+      .duckmaps_default_n("cat")
+    ),
+    styles = c(
+      rep("standard, vivid", length(.duckmaps_seq_names)),
+      rep("standard", length(.duckmaps_div_names)),
+      "standard"
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  if (type == "all") return(info)
+
+  type_label <- .duckmap_type_label(type)
+  info[info$type == type_label, , drop = FALSE]
+}
+
 .duckmaps_available_palettes <- function() {
   c(.duckmaps_seq_names, .duckmaps_div_names, "archetype")
 }
