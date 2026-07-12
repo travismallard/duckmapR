@@ -2258,9 +2258,14 @@ render();  // strip + code + charts
         const w = host ? host.getBoundingClientRect().width : 0;
         if (this.layout === 'stacked' && w > 620) {
           const h = this.plotCard.getBoundingClientRect().height;
-          if (h > 0) this.ctrlCard.style.height = h + 'px';
+          // Use min-height (not a fixed height) so the card grows instead of
+          // spilling its text when the controls are taller than the plot card
+          // (e.g. narrow landscape widths where the Vision seg wraps).
+          this.ctrlCard.style.height = '';
+          if (h > 0) this.ctrlCard.style.minHeight = h + 'px';
         } else {
           this.ctrlCard.style.height = '';
+          this.ctrlCard.style.minHeight = '';
         }
         if (this._built) this.renderDensity();
       };
