@@ -714,7 +714,7 @@
 <section id="design" style="background: var(--surface);">
   <p class="section-label">Why duckmapR</p>
   <h2 class="section-title">Color that works as hard as you do</h2>
-  <p class="section-body">Every palette in duckmapR is designed in perceptual color space and rigorously optimized with CIEDE2000 diagnostics, so equal steps in the data produce smooth, ordered visual changes — no false highlights, no lost detail.</p>
+  <p class="section-body">Every palette in duckmapR is designed in perceptual color space and rigorously optimized with CIEDE2000 diagnostics, so equal steps in the data produce smooth, ordered visual changes.</p>
 
   <div class="features-grid">
     <div class="feature-card">
@@ -1437,7 +1437,7 @@ const CHART_SETS = {
   seq: [
     {t:'Contour map', d:'Monotonic lightness keeps gradients legible.', fn:drawContour},
     {t:'Heatmap', d:'Equal data steps read as equal visual steps.', fn:drawCellHeatmap},
-    {t:'Scatter plot', d:'A moderator (color) shifts the X–Y slope — an interaction.', fn:drawContinuousScatter},
+    {t:'Scatter plot', d:'Point color faithfully encodes a third variable.', fn:drawContinuousScatter},
   ],
   div: [
     {t:'Correlation matrix', d:'Symmetric values centered at zero.', fn:drawCorrMatrix},
