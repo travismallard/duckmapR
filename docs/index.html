@@ -692,7 +692,7 @@
   <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4.5rem 2rem 3.5rem;">
     <div class="hero-eyebrow" style="justify-content: center; margin-bottom: 1.7rem;">MALLARD-INSPIRED SCIENTIFIC COLOR MAPS FOR R</div>
     <h1 class="hero-title" style="font-size: clamp(3.5rem, 11vw, 8rem); margin-bottom: 0;">duck<em>map</em>R</h1>
-    <p class="hero-subtitle" style="max-width: 620px; margin: 1.7rem auto 2.2rem; text-align: center;">Fifteen color maps. Sequential, diverging, and categorical options. All perceptually uniform, CVD-safe, and grayscale-readable.</p>
+    <p class="hero-subtitle" style="max-width: 620px; margin: 1.7rem auto 2.2rem; text-align: center;">Eighteen color maps. Sequential, diverging, and categorical options. All perceptually uniform, CVD-safe, and grayscale-readable.</p>
     <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center;">
       <a href="#install" class="hero-install">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 1v8M3.5 6l3.5 3.5L10.5 6M1 11h12"/></svg>
@@ -1184,8 +1184,12 @@ const DATA = (()=>{
   }}
   for(let y=0;y<GH;y++) for(let x=0;x<GW;x++) field[y][x]=(field[y][x]-fmin)/(fmax-fmin);
 
-  // Continuous scatter (z drives color)
-  const cScatter=[]; for(let i=0;i<240;i++){ const x=rng(), y=rng(); const z=Math.max(0,Math.min(1, 0.5+0.5*Math.sin(x*3.1)+0.35*(y-0.5)+0.12*gauss(rng))); cScatter.push({x,y,z}); }
+  // Continuous scatter — moderated (interaction) relationship: moderator m colors the dots,
+  // and the X->Y slope shifts with m (negative at low m, flat at mid, positive at high m).
+  const cSlope=m=>(m-0.5)*1.6;
+  const cScatter=[]; for(let i=0;i<220;i++){ const x=rng(), m=rng();
+    const y=Math.max(0.03,Math.min(0.97, 0.5+cSlope(m)*(x-0.5)+0.055*gauss(rng)));
+    cScatter.push({x,y,m}); }
 
   // Sequential bars
   const seqBars=[]; for(let i=0;i<9;i++){ seqBars.push(0.25+0.72*(i/8)+0.05*gauss(rng)); }
@@ -1305,12 +1309,25 @@ function drawContinuousScatter(canvas){
   const {ctx,w,h}=setupCanvas(canvas); const lut=buildLUT();
   ctx.fillStyle=css('--white'); ctx.fillRect(0,0,w,h);
   const pad=10;
+  const PX=x=>pad+x*(w-2*pad), PY=y=>h-(pad+y*(h-2*pad));
+  // dots colored by the moderator m
   DATA.cScatter.forEach(p=>{
-    const c=lut[Math.round(p.z*255)];
+    const c=lut[Math.round(p.m*255)];
     ctx.beginPath();
-    ctx.arc(pad+p.x*(w-2*pad), h-(pad+p.y*(h-2*pad)), 4.2, 0, 2*Math.PI);
+    ctx.arc(PX(p.x), PY(p.y), 4.2, 0, 2*Math.PI);
     ctx.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; ctx.fill();
     ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=0.5; ctx.stroke();
+  });
+  // simple-slope lines at low / mid / high moderator — they fan apart (the interaction)
+  const slope=m=>(m-0.5)*1.6, yAt=(m,x)=>Math.max(0.03,Math.min(0.97, 0.5+slope(m)*(x-0.5)));
+  [0.15,0.5,0.85].forEach(m=>{
+    const c=lut[Math.round(m*255)];
+    for(let pass=0;pass<2;pass++){
+      ctx.beginPath(); ctx.moveTo(PX(0),PY(yAt(m,0))); ctx.lineTo(PX(1),PY(yAt(m,1)));
+      if(pass===0){ ctx.strokeStyle='rgba(28,43,35,0.35)'; ctx.lineWidth=4.5; }
+      else { ctx.strokeStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; ctx.lineWidth=2.4; }
+      ctx.lineCap='round'; ctx.stroke();
+    }
   });
 }
 function drawCorrMatrix(canvas){
@@ -1420,7 +1437,7 @@ const CHART_SETS = {
   seq: [
     {t:'Contour map', d:'Monotonic lightness keeps gradients legible.', fn:drawContour},
     {t:'Heatmap', d:'Equal data steps read as equal visual steps.', fn:drawCellHeatmap},
-    {t:'Scatter plot', d:'Point color faithfully encodes a third variable.', fn:drawContinuousScatter},
+    {t:'Scatter plot', d:'A moderator (color) shifts the X–Y slope — an interaction.', fn:drawContinuousScatter},
   ],
   div: [
     {t:'Correlation matrix', d:'Symmetric values centered at zero.', fn:drawCorrMatrix},
