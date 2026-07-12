@@ -26,7 +26,7 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
 
   body {
     font-family: 'DM Sans', sans-serif;
@@ -421,6 +421,7 @@
     border: 1px solid var(--surface-3);
     border-radius: 8px;
     padding: 1.25rem 1.5rem;
+    min-width: 0;
   }
   .install-card h4 {
     font-size: 0.92rem;
@@ -516,6 +517,10 @@
     section { padding: 3.5rem 1.5rem; }
     .hero { padding: 3rem 1.5rem 3rem; min-height: auto; }
     footer { padding: 2rem 1.5rem; }
+    /* API spec-table: reflow to fit narrow screens instead of overflowing */
+    .spec-table { table-layout: fixed; }
+    .spec-table td:first-child { white-space: normal; word-break: break-word; }
+    .spec-table code { overflow-wrap: anywhere; }
   }
 
   /* ── Live demo (embedded palette explorer) ───────────────────────────────── */
@@ -588,7 +593,7 @@
     font-family: 'DM Mono', monospace; font-size: 0.72rem;
     letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-4);
   }
-  .seg { display: inline-flex; border: 1px solid var(--surface-3); border-radius: 6px; overflow: hidden; }
+  .seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--surface-3); border-radius: 6px; overflow: hidden; }
   .seg button {
     font-family: 'DM Mono', monospace; font-size: 0.76rem;
     letter-spacing: 0.02em; padding: 0.38em 0.7em; border: none;
@@ -1907,7 +1912,7 @@ render();  // strip + code + charts
   .cb{display:grid; gap:1.1rem;}
   :host([layout="split"]) .cb{grid-template-columns:minmax(0,1.04fr) minmax(0,0.96fr); align-items:start;}
   .col{display:flex; flex-direction:column; gap:1.1rem; min-width:0;}
-  .card{background:var(--white); border:1px solid var(--surface-3); border-radius:10px; padding:1.05rem 1.1rem;}
+  .card{background:var(--white); border:1px solid var(--surface-3); border-radius:10px; padding:1.05rem 1.1rem; min-width:0;}
   .card-hd{display:flex; align-items:baseline; justify-content:space-between; gap:0.6rem; margin-bottom:0.85rem; flex-wrap:wrap;}
   .card-title{font-family:var(--mono); font-size: 0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-4);}
   .pill{font-family:var(--mono); font-size: 0.72rem; letter-spacing:0.05em; padding:0.22em 0.7em; border-radius:100px; background:var(--surface-2); color:var(--ink-3); border:1px solid var(--surface-3);}
@@ -1930,7 +1935,7 @@ render();  // strip + code + charts
   /* strip + verdict */
   .strip{height:42px; border-radius:6px; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.07); overflow:hidden; margin-bottom:0.55rem;}
   .strip-list{display:flex; flex-direction:column; gap:0.35rem; margin-bottom:0.5rem;}
-  .strip-row{display:grid; grid-template-columns:84px 1fr; gap:0.7rem; align-items:center; padding:0.25rem 0.4rem; border-radius:5px; cursor:pointer; transition:background .12s;}
+  .strip-row{display:grid; grid-template-columns:84px minmax(0,1fr); gap:0.7rem; align-items:center; padding:0.25rem 0.4rem; border-radius:5px; cursor:pointer; transition:background .12s;}
   .strip-row:hover{background:var(--surface);}
   .strip-row.sel{background:var(--pass-bg); box-shadow:inset 2px 0 0 var(--teal);}
   .strip-label{font-family:var(--mono); font-size: 0.72rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-3);}
@@ -1957,7 +1962,7 @@ render();  // strip + code + charts
   .export-copy:hover{background:rgba(255,255,255,0.2);}
 
   /* controls */
-  .ctrl-row{display:grid; grid-template-columns:118px 1fr; gap:0.7rem; align-items:center; margin-bottom:0.7rem;}
+  .ctrl-row{display:grid; grid-template-columns:118px minmax(0,1fr); gap:0.7rem; align-items:center; margin-bottom:0.7rem;}
   .ctrl-label{font-family:var(--mono); font-size: 0.76rem; letter-spacing:0.04em; color:var(--ink-3);}
   .seg{display:inline-flex; border:1px solid var(--surface-3); border-radius:6px; overflow:hidden; flex-wrap:wrap;}
   .seg button{font-family:var(--mono); font-size: 0.74rem; letter-spacing:0.01em; padding:0.36em 0.62em; border:none; background:var(--white); color:var(--ink-3); cursor:pointer; border-right:1px solid var(--surface-3); transition:background .12s,color .12s;}
@@ -1969,12 +1974,12 @@ render();  // strip + code + charts
   .ctrl-row .seg{display:flex; width:100%;}
   .ctrl-row .seg button{flex:1 1 0; text-align:center; white-space:nowrap;}
   .lslider{display:flex; align-items:center; gap:0.7rem;}
-  .lslider input[type=range]{flex:1; accent-color:var(--accent); height:4px;}
+  .lslider input[type=range]{flex:1; min-width:0; accent-color:var(--accent); height:4px;}
   .lslider .lval{font-family:var(--mono); font-size: 0.8rem; color:var(--ink-2); min-width:62px;}
   .lslider .lval b{color:var(--accent); font-weight:600;}
 
   .anchors{display:flex; flex-direction:column; gap:0.4rem; margin-top:0.2rem;}
-  .anchor{display:grid; grid-template-columns:24px 22px auto 1fr auto; gap:0.55rem; align-items:center; padding:0.32rem 0.4rem; border-radius:7px; border:1px solid transparent; cursor:pointer; transition:background .12s,border-color .12s;}
+  .anchor{display:grid; grid-template-columns:24px 22px auto minmax(0,1fr) auto; gap:0.55rem; align-items:center; padding:0.32rem 0.4rem; border-radius:7px; border:1px solid transparent; cursor:pointer; transition:background .12s,border-color .12s;}
   .anchor:hover{background:var(--surface-2);}
   .anchor.sel{border-color:var(--teal); background:var(--pass-bg);}
   .anchor .aid{font-family:var(--mono); font-size: 0.76rem; font-weight:600; color:var(--ink-3);}
@@ -2023,6 +2028,7 @@ render();  // strip + code + charts
   .more-body{padding-top:0.6rem;}
   .sub-title{font-family:var(--mono); font-size: 0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-4); margin:1.1rem 0 0.55rem;}
 
+  .cond-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch;}
   table.cond{width:100%; border-collapse:collapse; font-family:var(--mono); font-size: 0.76rem;}
   table.cond th{font-size: 0.72rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-4); text-align:right; padding:0.5rem 0.45rem; border-bottom:1px solid var(--surface-3); font-weight:500;}
   table.cond th:first-child{text-align:left;}
@@ -2605,7 +2611,9 @@ render();  // strip + code + charts
       const table = document.createElement('table'); table.className = 'cond';
       table.innerHTML = `<thead><tr><th>Condition</th><th>L★ mono</th><th>L★ span</th><th>min ΔE₀₀</th><th>ΔE CV</th><th>cum R²</th><th>Status</th></tr></thead>`;
       table.appendChild(this.condTableBody);
-      card.appendChild(table);
+      const condWrap = el('div', 'cond-wrap');
+      condWrap.appendChild(table);
+      card.appendChild(condWrap);
       const hint = el('div', 'table-hint'); hint.textContent = 'Click a condition to inspect it in the preview and metrics.';
       card.appendChild(hint);
 
