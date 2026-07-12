@@ -43,7 +43,7 @@ cols_vivid <- duckmap("full_plumage", n = 9, style = "vivid")
 
 # Divergent palettes
 cols_div <- duckmap("umber_teal")
-cols_div_11 <- duckmap("orange_blue", n = 11)
+cols_div_11 <- duckmap("copper_blue", n = 11)
 
 # Categorical palette
 cols_cat <- duckmap("archetype")
@@ -108,7 +108,7 @@ ggplot(faithfuld, aes(waiting, eruptions, fill = density)) +
 ```r
 ggplot(faithfuld, aes(waiting, eruptions, fill = density - mean(density))) +
   geom_raster() +
-  scale_fill_duckmap("orange_blue") +
+  scale_fill_duckmap("copper_blue") +
   theme_minimal()
 ```
 

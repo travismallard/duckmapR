@@ -26,7 +26,7 @@ duckmap(
 \examples{
 duckmap("full_plumage", n = 9)
 duckmap("full_plumage", n = 9, style = "vivid")
-duckmap("orange_blue", n = 11)
+duckmap("copper_blue", n = 11)
 duckmap("archetype")
 duckmap(type = "divergent")
 duckmap(type = "categorical", colors = c("mallard_teal", "soft_gold"))

@@ -9,6 +9,9 @@ test_that("duckmap_summary(plot = FALSE) reports palette metadata", {
   expect_false("wetland_dusk" %in% info$palette)
   expect_false("bronze_wing" %in% info$palette)
   expect_true("umber_teal" %in% info$palette)
+  expect_true("copper_blue" %in% info$palette)
+  expect_false("orange_blue" %in% info$palette)
+  expect_equal(sum(info$type == "divergent"), 6L)
   expect_true("archetype" %in% info$palette)
   expect_false("categorical" %in% info$palette)
   expect_true(any(info$type == "sequential"))
@@ -25,7 +28,11 @@ test_that("duckmap generates palettes by name without type", {
   expect_error(duckmap("wetland_dusk", n = 9))
   expect_error(duckmap("bronze_wing", n = 9))
   expect_equal(length(duckmap("umber_teal", n = 11)), 11)
-  expect_equal(length(duckmap("orange_blue")), 257)
+  expect_equal(length(duckmap("copper_blue")), 257)
+  expect_error(duckmap("orange_blue"))
+  for (p in c("umber_teal", "orange_teal", "orange_violet", "chestnut_violet", "copper_blue", "rose_blue")) {
+    expect_equal(length(duckmap(p, n = 11)), 11)
+  }
   expect_equal(length(duckmap(type = "seq")), 256)
   expect_equal(length(duckmap(type = "sequential")), 256)
   expect_equal(length(duckmap(type = "div")), 257)
@@ -54,8 +61,8 @@ test_that("vivid sequential style is available and constrained", {
 })
 
 test_that("even divergent n warns", {
-  expect_warning(duckmap("orange_blue", n = 10), "even")
-  expect_silent(duckmap("orange_blue", n = 11))
+  expect_warning(duckmap("copper_blue", n = 10), "even")
+  expect_silent(duckmap("copper_blue", n = 11))
 })
 
 
