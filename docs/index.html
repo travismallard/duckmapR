@@ -2498,7 +2498,8 @@ render();  // strip + code + charts
       const svg = this.densitySvg;
       const g = this.densityGeom();
       const idx = this.active().indexOf(anchorRef);
-      if (idx !== -1) this.selected = idx;
+      // select on pointerdown (even without a drag) so a plain click/tap targets this anchor
+      if (idx !== -1) this.selectAnchor(idx);
       const move = (ev) => {
         const pt = svgPoint(svg, ev);
         anchorRef.t = g.xi(pt.x);
@@ -2669,6 +2670,8 @@ render();  // strip + code + charts
         this.selLabel.textContent = `L\u2605 \u00b7 Anchor ${this.selected + 1}`;
       }
       this.renderPlot();
+      // keep the Anchor Positions handle highlight in sync with the current selection
+      this.renderDensity();
     }
 
     /* ---- render ---- */
